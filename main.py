@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from pineconeClient import PineconeClient 
 from openaiClient import OpenAIClient
 from googledriveClient import GoogleDriveClient
+from videoProcessingClient import extract_evenly_spread_frames
 
 def list_all_files(directory=".") -> List[str]:
     # Walk through all directories and files
@@ -18,18 +19,18 @@ def list_all_files(directory=".") -> List[str]:
 
 
 if __name__ == "__main__":
-    # load_dotenv()
-    # # Initialize Pinecone
-    # PINECONE_API_KEY = os.getenv('PINECONE_API_KEY')  # Set your API key in environment variables
-    # INDEX_NAME = "rag-documents"  # Choose an index name
-    # OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')  # Get API key from environment variable
+    load_dotenv()
+    # Initialize Pinecone
+    PINECONE_API_KEY = os.getenv('PINECONE_API_KEY')  # Set your API key in environment variables
+    INDEX_NAME = "rag-documents"  # Choose an index name
+    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')  # Get API key from environment variable
     
-    # if not PINECONE_API_KEY and not OPENAI_API_KEY:
-    #     raise ValueError("Please set PINECONE_API_KEY and OPENAI_API_KEY environment variables")
+    if not PINECONE_API_KEY and not OPENAI_API_KEY:
+        raise ValueError("Please set PINECONE_API_KEY and OPENAI_API_KEY environment variables")
     
-    # # Initialize Pinecone 
-    # pinecone_client = PineconeClient(PINECONE_API_KEY, INDEX_NAME)
-    # openai_client = OpenAIClient(OPENAI_API_KEY)
+    # Initialize Pinecone 
+    pinecone_client = PineconeClient(PINECONE_API_KEY, INDEX_NAME)
+    openai_client = OpenAIClient(OPENAI_API_KEY)
     
     # # Get markdown files
     # current_directory = "."
@@ -44,12 +45,12 @@ if __name__ == "__main__":
     # else:
     #     print("No markdown files found in the specified directory")
     
-    # # Example query
+    ## Example query
     # query = "How to take pictures"
     # query_embedding = openai_client.get_embedding(query)
     # similar_docs = pinecone_client.query_similar_documents(query_embedding, k=2)
     # print(similar_docs)
-    # # prompt = build_prompt(query, similar_docs)
+    # prompt = build_prompt(query, similar_docs)
 
     # # # print(prompt)
     # # answer = get_answer(prompt)
@@ -62,7 +63,15 @@ if __name__ == "__main__":
     try:
         video_links = downloader.get_folder_file_links(folderUrl)
         for i, vid in enumerate(video_links):
-            downloader.download_file(vid['url'], output_path="downloads", filename=str(i)+'.mp4')
+            video_name = str(i)+'.mp4'
+            frames_folder_name = "frames/" + str(i) + "/"
+            # downloader.download_file(vid['url'], output_path="downloads", filename=video_name)
+            # extract_evenly_spread_frames("downloads/" + video_name, frames_folder_name, 10)
+            response_text = openai_client.get_frames_response(frames_folder_name)
+            print(response_text)
+            break
+
+            
         
     except ValueError as e:
         print(f"Error: {e}")
