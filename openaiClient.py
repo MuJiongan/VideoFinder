@@ -16,11 +16,12 @@ class OpenAIClient:
     
     def transcribe(self, audio_file: str) -> str:
         """Transcribe audio file to text using OpenAI's Whisper model."""
-        transcription = self.client.audio.transcriptions.create(
-            model="whisper-1",
-            file=audio_file,
-            response_format="text"  # You can also use 'verbose_json' for detailed output
-        )
+        with open(audio_file, "rb") as audio_file:
+            transcription = self.client.audio.transcriptions.create(
+                model="whisper-1",
+                file=audio_file,
+                response_format="text" 
+            )
         return transcription
 
     def build_prompt(self, query: str, similar_docs: List[dict]) -> str:
