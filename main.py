@@ -4,7 +4,10 @@ from dotenv import load_dotenv
 from pineconeClient import PineconeClient 
 from openaiClient import OpenAIClient
 from googledriveClient import GoogleDriveClient
+
 from videoProcessingClient import extract_evenly_spread_frames
+from audioExtractionClient import video_to_audio
+
 
 def list_all_files(directory=".") -> List[str]:
     # Walk through all directories and files
@@ -60,16 +63,25 @@ if __name__ == "__main__":
     # Example Google Drive shareable link
     folderUrl = "https://drive.google.com/drive/folders/13yOjGoHafSHfGpmS9uYcCTUlbQ7d_R1A?usp=sharing"
     
-    try:
-        video_links = downloader.get_folder_file_links(folderUrl)
-        for i, vid in enumerate(video_links):
-            video_name = str(i)+'.mp4'
-            frames_folder_name = "frames/" + str(i) + "/"
-            # downloader.download_file(vid['url'], output_path="downloads", filename=video_name)
-            # extract_evenly_spread_frames("downloads/" + video_name, frames_folder_name, 10)
-            response_text = openai_client.get_frames_response(frames_folder_name)
-            print(response_text)
-            break
+    
+
+    video_links = downloader.get_folder_file_links(folderUrl)
+    for i, vid in enumerate(video_links):
+        video_name = str(i)+'.mp4'
+        frames_folder_name = "frames/" + str(i) + "/"
+        # downloader.download_file(vid['url'], output_path="downloads", filename=video_name)
+        # extract_evenly_spread_frames("downloads/" + video_name, frames_folder_name, 10)
+        response_text = openai_client.get_frames_response(frames_folder_name)
+        print(response_text)
+        break
+
+    # video_links = downloader.get_folder_file_links(folderUrl)
+    # for i, vid in enumerate(video_links):
+    #     downloader.download_file(vid['url'], output_path="downloads", filename=str(i)+'.mp4')
+    video_to_audio('downloads/0.mp4', '0.mp3')
+    response = openai_client.transcribe('0.mp3')
+    print(response)
+
 
             
         
