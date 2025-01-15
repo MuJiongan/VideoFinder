@@ -47,7 +47,6 @@ class OpenAIClient:
             messages.append({
                 "role": "user",
                 "content": [
-                    {"type": "text", "text": "What’s in this image? Be as detailed as possible and try to name the people involved in the scene (if there's any)"},
                     {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
                 ]
             })
